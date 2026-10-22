@@ -1,0 +1,139 @@
+// Database schema. See docs/ in the project for the Hebrew explanation of every table.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Scale {
+  YES_NO
+  RATING
+}
+
+enum Visibility {
+  PUBLIC
+  PRIVATE
+}
+
+enum Avatar {
+  LION
+  TIGER
+  FOX
+  PANDA
+  KOALA
+  OWL
+  PENGUIN
+  TURTLE
+  DOLPHIN
+  WHALE
+  OCTOPUS
+  BUTTERFLY
+  BEE
+  UNICORN
+  HORSE
+  RABBIT
+  CAT
+  DOG
+  ROCKET
+  STAR
+  SUN
+  MOON
+  RAINBOW
+  SUNFLOWER
+  TREE
+  CACTUS
+  MOUNTAIN
+  BOOK
+  GUITAR
+  SOCCER
+}
+
+/// A group of friends. Every user and challenge belongs to exactly one group.
+model Group {
+  id        Int    @id @default(autoincrement())
+  name      String @db.VarChar(40)
+  /// Stored in upper case; unique across all groups.
+  joinCode  String @unique @db.VarChar(12)
+  /// The single manager of the group. Null only for a moment inside the registration transaction.
+  managerId Int?   @unique
+  manager   User?  @relation("GroupManager", fields: [managerId], references: [id])
+
+  members    User[]      @relation("GroupMembers")
+  challenges Challenge[]
+}
+
+model User {
+  id           Int    @id @default(autoincrement())
+  /// Stored in lower case.
+  username     String @unique @db.VarChar(20)
+  passwordHash String
+  displayName  String @db.VarChar(30)
+  avatar       Avatar
+  /// Assigned by the server from a fixed palette.
+  color        String @db.VarChar(7)
+  groupId      Int
+  group        Group  @relation("GroupMembers", fields: [groupId], references: [id])
+
+  managedGroup      Group?        @relation("GroupManager")
+  createdChallenges Challenge[]   @relation("ChallengeCreator")
+  participations    Participant[]
+}
+
+/// The central object. Its status (UPCOMING / ACTIVE / ENDED) is computed from the dates, not stored.
+model Challenge {
+  id                  Int        @id @default(autoincrement())
+  groupId             Int
+  group               Group      @relation(fields: [groupId], references: [id])
+  creatorId           Int
+  creator             User       @relation("ChallengeCreator", fields: [creatorId], references: [id])
+  title               String     @db.VarChar(60)
+  description         String?    @db.VarChar(500)
+  scale               Scale
+  visibility          Visibility
+  startDate           DateTime   @db.Date
+  endDate             DateTime   @db.Date
+  prize               String?    @db.VarChar(100)
+  /// Public challenges only: how many days after the start date people may still join.
+  joinWindowDays      Int?
+  /// The challenge this one renews (a "series"). Becomes null if that challenge is deleted.
+  previousChallengeId Int?
+  previousChallenge   Challenge? @relation("Renewal", fields: [previousChallengeId], references: [id], onDelete: SetNull)
+  renewals            Challenge[] @relation("Renewal")
+
+  participants Participant[]
+
+  @@index([groupId])
+}
+
+/// Who joined which challenge. The pair (challengeId, userId) is the primary key.
+model Participant {
+  challengeId Int
+  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  userId      Int
+  user        User      @relation(fields: [userId], references: [id])
+  /// First day this participant must report: the later of the start date and the join day.
+  firstDay    DateTime  @db.Date
+
+  reports Report[]
+
+  @@id([challengeId, userId])
+  @@index([userId])
+}
+
+/// One daily report. Reports are never updated. The primary key allows one report per day.
+model Report {
+  challengeId Int
+  userId      Int
+  date        DateTime    @db.Date
+  /// YES_NO: 0 or 1. RATING: 1-10. Skipped day: 0.
+  value       Int
+  /// True when the value 0 was filled automatically for a skipped day.
+  skipped     Boolean     @default(false)
+  participant Participant @relation(fields: [challengeId, userId], references: [challengeId, userId], onDelete: Cascade)
+
+  @@id([challengeId, userId, date])
+}

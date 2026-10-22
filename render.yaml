@@ -1,0 +1,26 @@
+# Render Blueprint – creates the web service for the backend.
+# The PostgreSQL database is NOT created here: use a free PostgreSQL provider (e.g. Supabase)
+# and paste its connection string into DATABASE_URL. See START-HERE.md.
+services:
+  - type: web
+    name: challenges-backend
+    runtime: node
+    plan: free
+    # --include=dev: TypeScript is needed for the build even when NODE_ENV=production
+    buildCommand: npm ci --include=dev && npm run build
+    # Applies pending database migrations, then starts the server
+    startCommand: npm run start:prod
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false # you paste it in the Render dashboard
+      - key: JWT_SECRET
+        generateValue: true # Render creates a long random secret
+      - key: JWT_EXPIRES_IN
+        value: 24h
+      - key: CORS_ORIGIN
+        sync: false # the address of your React site, e.g. https://my-app.onrender.com
