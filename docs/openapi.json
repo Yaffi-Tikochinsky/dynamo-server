@@ -3,7 +3,7 @@
   "info": {
     "title": "Challenges API – אתר מעקב אתגרים קבוצתי",
     "version": "1.0.0",
-    "description": "שרת לאתר מעקב אתגרים קבוצתי.\n\n**איך מתחברים כאן:** הריצו `POST /api/auth/login` (משתמשי הדגמה: `admin` או `noa`, סיסמת ההדגמה מוגדרת ב-Seed), העתיקו את ה-token מהתשובה, לחצו על הכפתור **Authorize** למעלה והדביקו אותו. מעכשיו כל הקריאות נשלחות עם ה-Token.\n\nתאריכים הם מחרוזות `YYYY-MM-DD` לפי שעון ישראל. כל שגיאה מוחזרת במבנה `{ error: { code, message, details? } }`."
+    "description": "שרת לאתר מעקב אתגרים קבוצתי.\n\n**איך מתחברים כאן:** הריצו `POST /api/auth/login` (משתמשי הדגמה: `admin@example.com` או `noa@example.com`, סיסמת ההדגמה מוגדרת ב-Seed), העתיקו את ה-token מהתשובה, לחצו על הכפתור **Authorize** למעלה והדביקו אותו. מעכשיו כל הקריאות נשלחות עם ה-Token.\n\nתאריכים הם מחרוזות `YYYY-MM-DD` לפי שעון ישראל. כל שגיאה מוחזרת במבנה `{ error: { code, message, details? } }`."
   },
   "servers": [
     {
@@ -154,8 +154,9 @@
           "id": {
             "type": "integer"
           },
-          "username": {
-            "type": "string"
+          "email": {
+            "type": "string",
+            "format": "email"
           },
           "displayName": {
             "type": "string"
@@ -631,17 +632,17 @@
               "schema": {
                 "type": "object",
                 "required": [
-                  "username",
+                  "email",
                   "password",
                   "displayName",
                   "avatar"
                 ],
                 "properties": {
-                  "username": {
+                  "email": {
                     "type": "string",
-                    "minLength": 3,
-                    "maxLength": 20,
-                    "pattern": "^[A-Za-z0-9_]+$"
+                    "format": "email",
+                    "maxLength": 254,
+                    "description": "כתובת המייל משמשת לכניסה; אין הבדל בין אותיות גדולות לקטנות"
                   },
                   "password": {
                     "type": "string",
@@ -671,7 +672,7 @@
                 "join": {
                   "summary": "הצטרפות עם קוד",
                   "value": {
-                    "username": "noa2",
+                    "email": "noa2@example.com",
                     "password": "Secret123",
                     "displayName": "נועה",
                     "avatar": "OWL",
@@ -681,7 +682,7 @@
                 "create": {
                   "summary": "קבוצה חדשה",
                   "value": {
-                    "username": "dad",
+                    "email": "dad@example.com",
                     "password": "Secret123",
                     "displayName": "אבא",
                     "avatar": "LION",
@@ -704,7 +705,7 @@
                   "token": "eyJhbGciOi...",
                   "user": {
                     "id": 7,
-                    "username": "noa",
+                    "email": "noa@example.com",
                     "displayName": "נועה",
                     "avatar": "OWL",
                     "color": "#EB6834",
@@ -751,7 +752,7 @@
             }
           },
           "409": {
-            "description": "שם המשתמש תפוס",
+            "description": "כתובת המייל כבר רשומה",
             "content": {
               "application/json": {
                 "schema": {
@@ -760,7 +761,7 @@
                 "example": {
                   "error": {
                     "code": "CONFLICT",
-                    "message": "שם המשתמש תפוס"
+                    "message": "כתובת המייל כבר רשומה"
                   }
                 }
               }
@@ -783,12 +784,13 @@
               "schema": {
                 "type": "object",
                 "required": [
-                  "username",
+                  "email",
                   "password"
                 ],
                 "properties": {
-                  "username": {
-                    "type": "string"
+                  "email": {
+                    "type": "string",
+                    "format": "email"
                   },
                   "password": {
                     "type": "string"
@@ -796,7 +798,7 @@
                 }
               },
               "example": {
-                "username": "admin",
+                "email": "admin@example.com",
                 "password": "Demo1234"
               }
             }
@@ -814,7 +816,7 @@
                   "token": "eyJhbGciOi...",
                   "user": {
                     "id": 7,
-                    "username": "noa",
+                    "email": "noa@example.com",
                     "displayName": "נועה",
                     "avatar": "OWL",
                     "color": "#EB6834",
@@ -854,7 +856,7 @@
                 "example": {
                   "error": {
                     "code": "UNAUTHORIZED",
-                    "message": "שם משתמש או סיסמה שגויים"
+                    "message": "כתובת מייל או סיסמה שגויים"
                   }
                 }
               }
@@ -884,7 +886,7 @@
                 },
                 "example": {
                   "id": 7,
-                  "username": "noa",
+                  "email": "noa@example.com",
                   "displayName": "נועה",
                   "avatar": "OWL",
                   "color": "#EB6834",

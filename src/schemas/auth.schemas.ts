@@ -2,17 +2,17 @@ import { z } from 'zod';
 import { Avatar } from '@prisma/client';
 import { LIMITS } from '../lib/constants';
 
-const username = z
+/** Emails are compared in lower case, so "Noa@Mail.com" and "noa@mail.com" are the same account. */
+const email = z
   .string({ required_error: 'שדה חובה' })
   .trim()
-  .min(LIMITS.usernameMin, `שם המשתמש חייב להכיל לפחות ${LIMITS.usernameMin} תווים`)
-  .max(LIMITS.usernameMax, `שם המשתמש יכול להכיל עד ${LIMITS.usernameMax} תווים`)
-  .regex(/^[A-Za-z0-9_]+$/, 'שם המשתמש יכול להכיל רק אותיות באנגלית, ספרות וקו תחתון')
-  .transform((v) => v.toLowerCase());
+  .toLowerCase()
+  .max(LIMITS.emailMax, `כתובת המייל יכולה להכיל עד ${LIMITS.emailMax} תווים`)
+  .email('כתובת מייל לא תקינה');
 
 export const registerSchema = z
   .object({
-    username,
+    email,
     password: z
       .string({ required_error: 'שדה חובה' })
       .min(LIMITS.passwordMin, `הסיסמה חייבת להכיל לפחות ${LIMITS.passwordMin} תווים`)
@@ -48,7 +48,7 @@ export const registerSchema = z
 
 export const loginSchema = z
   .object({
-    username: z.string({ required_error: 'שדה חובה' }).trim().min(1, 'שדה חובה').transform((v) => v.toLowerCase()),
+    email: z.string({ required_error: 'שדה חובה' }).trim().toLowerCase().min(1, 'שדה חובה'),
     password: z.string({ required_error: 'שדה חובה' }).min(1, 'שדה חובה'),
   })
   .strict();

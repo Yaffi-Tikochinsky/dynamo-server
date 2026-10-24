@@ -68,8 +68,8 @@ model Group {
 
 model User {
   id           Int    @id @default(autoincrement())
-  /// Stored in lower case.
-  username     String @unique @db.VarChar(20)
+  /// Login identifier. Stored in lower case; unique.
+  email        String @unique @db.VarChar(254)
   passwordHash String
   displayName  String @db.VarChar(30)
   avatar       Avatar

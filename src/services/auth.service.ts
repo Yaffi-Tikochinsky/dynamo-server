@@ -13,7 +13,7 @@ const BCRYPT_ROUNDS = 10;
 export function toUserDto(user: User, group: Group) {
   return {
     id: user.id,
-    username: user.username,
+    email: user.email,
     displayName: user.displayName,
     avatar: user.avatar,
     color: user.color,
@@ -25,7 +25,7 @@ export function toUserDto(user: User, group: Group) {
 export function authUserToDto(user: AuthUser) {
   return {
     id: user.id,
-    username: user.username,
+    email: user.email,
     displayName: user.displayName,
     avatar: user.avatar,
     color: user.color,
@@ -39,11 +39,11 @@ export function authUserToDto(user: AuthUser) {
  * or creates a new group with the user as its manager (groupName).
  */
 export async function register(input: RegisterInput) {
-  const taken = await prisma.user.findUnique({ where: { username: input.username } });
-  if (taken) throw conflict('שם המשתמש תפוס', [{ field: 'username', message: 'שם המשתמש תפוס, בחרו שם אחר' }]);
+  const taken = await prisma.user.findUnique({ where: { email: input.email } });
+  if (taken) throw conflict('כתובת המייל כבר רשומה', [{ field: 'email', message: 'כבר קיים חשבון עם כתובת המייל הזו' }]);
 
   const passwordHash = await bcrypt.hash(input.password, BCRYPT_ROUNDS);
-  const base = { username: input.username, passwordHash, displayName: input.displayName, avatar: input.avatar };
+  const base = { email: input.email, passwordHash, displayName: input.displayName, avatar: input.avatar };
 
   const { user, group } = await prisma.$transaction(async (tx) => {
     if (input.joinCode !== undefined) {
@@ -65,9 +65,9 @@ export async function register(input: RegisterInput) {
 }
 
 export async function login(input: LoginInput) {
-  const user = await prisma.user.findUnique({ where: { username: input.username }, include: { group: true } });
-  // Same message for a wrong username and a wrong password, so attackers can't tell which.
+  const user = await prisma.user.findUnique({ where: { email: input.email }, include: { group: true } });
+  // Same message for an unknown email and a wrong password, so attackers can't tell which.
   const ok = user ? await bcrypt.compare(input.password, user.passwordHash) : false;
-  if (!user || !ok) throw unauthorized('שם משתמש או סיסמה שגויים');
+  if (!user || !ok) throw unauthorized('כתובת מייל או סיסמה שגויים');
   return { token: signToken(user.id), user: toUserDto(user, user.group) };
 }

@@ -25,7 +25,7 @@ const secured = [{ bearerAuth: [] }];
 const idPath = [{ name: 'id', in: 'path', required: true, description: 'מזהה האתגר', schema: { type: 'integer', example: 12 } }];
 
 const userExample = {
-  id: 7, username: 'noa', displayName: 'נועה', avatar: 'OWL', color: '#EB6834', role: 'MEMBER',
+  id: 7, email: 'noa@example.com', displayName: 'נועה', avatar: 'OWL', color: '#EB6834', role: 'MEMBER',
   group: { id: 2, name: 'משפחת כהן' },
 };
 const summaryExample = {
@@ -63,7 +63,7 @@ export const openApiDocument: Obj = {
     version: '1.0.0',
     description:
       'שרת לאתר מעקב אתגרים קבוצתי.\n\n' +
-      '**איך מתחברים כאן:** הריצו `POST /api/auth/login` (משתמשי הדגמה: `admin` או `noa`, סיסמת ההדגמה מוגדרת ב-Seed), ' +
+      '**איך מתחברים כאן:** הריצו `POST /api/auth/login` (משתמשי הדגמה: `admin@example.com` או `noa@example.com`, סיסמת ההדגמה מוגדרת ב-Seed), ' +
       'העתיקו את ה-token מהתשובה, לחצו על הכפתור **Authorize** למעלה והדביקו אותו. מעכשיו כל הקריאות נשלחות עם ה-Token.\n\n' +
       'תאריכים הם מחרוזות `YYYY-MM-DD` לפי שעון ישראל. כל שגיאה מוחזרת במבנה `{ error: { code, message, details? } }`.',
   },
@@ -100,7 +100,7 @@ export const openApiDocument: Obj = {
       User: {
         type: 'object',
         properties: {
-          id: { type: 'integer' }, username: { type: 'string' }, displayName: { type: 'string' }, avatar: ref('Avatar'),
+          id: { type: 'integer' }, email: { type: 'string', format: 'email' }, displayName: { type: 'string' }, avatar: ref('Avatar'),
           color: { type: 'string' }, role: { type: 'string', enum: ['MANAGER', 'MEMBER'] },
           group: { type: 'object', properties: { id: { type: 'integer' }, name: { type: 'string' } } },
         },
@@ -185,9 +185,9 @@ export const openApiDocument: Obj = {
           content: {
             'application/json': {
               schema: {
-                type: 'object', required: ['username', 'password', 'displayName', 'avatar'],
+                type: 'object', required: ['email', 'password', 'displayName', 'avatar'],
                 properties: {
-                  username: { type: 'string', minLength: 3, maxLength: 20, pattern: '^[A-Za-z0-9_]+$' },
+                  email: { type: 'string', format: 'email', maxLength: 254, description: 'כתובת המייל משמשת לכניסה; אין הבדל בין אותיות גדולות לקטנות' },
                   password: { type: 'string', minLength: 8, maxLength: 64, description: 'לפחות אות אחת באנגלית וספרה אחת' },
                   displayName: { type: 'string', minLength: 2, maxLength: 30 },
                   avatar: ref('Avatar'),
@@ -196,8 +196,8 @@ export const openApiDocument: Obj = {
                 },
               },
               examples: {
-                join: { summary: 'הצטרפות עם קוד', value: { username: 'noa2', password: 'Secret123', displayName: 'נועה', avatar: 'OWL', joinCode: 'DEMO2026' } },
-                create: { summary: 'קבוצה חדשה', value: { username: 'dad', password: 'Secret123', displayName: 'אבא', avatar: 'LION', groupName: 'משפחת כהן' } },
+                join: { summary: 'הצטרפות עם קוד', value: { email: 'noa2@example.com', password: 'Secret123', displayName: 'נועה', avatar: 'OWL', joinCode: 'DEMO2026' } },
+                create: { summary: 'קבוצה חדשה', value: { email: 'dad@example.com', password: 'Secret123', displayName: 'אבא', avatar: 'LION', groupName: 'משפחת כהן' } },
               },
             },
           },
@@ -206,18 +206,18 @@ export const openApiDocument: Obj = {
           201: { description: 'נרשם והתחבר', content: json(ref('AuthResponse'), { token: 'eyJhbGciOi...', user: userExample }) },
           400: E[400],
           404: errorResponse('קוד ההצטרפות לא נמצא', 'NOT_FOUND', 'קוד ההצטרפות לא נמצא'),
-          409: errorResponse('שם המשתמש תפוס', 'CONFLICT', 'שם המשתמש תפוס'),
+          409: errorResponse('כתובת המייל כבר רשומה', 'CONFLICT', 'כתובת המייל כבר רשומה'),
         },
       },
     },
     '/api/auth/login': {
       post: {
         tags: ['Auth'], summary: 'התחברות – מחזיר JWT', security: [],
-        requestBody: { required: true, content: json({ type: 'object', required: ['username', 'password'], properties: { username: { type: 'string' }, password: { type: 'string' } } }, { username: 'admin', password: 'Demo1234' }) },
+        requestBody: { required: true, content: json({ type: 'object', required: ['email', 'password'], properties: { email: { type: 'string', format: 'email' }, password: { type: 'string' } } }, { email: 'admin@example.com', password: 'Demo1234' }) },
         responses: {
           200: { description: 'מחובר', content: json(ref('AuthResponse'), { token: 'eyJhbGciOi...', user: { ...userExample, role: 'MANAGER' } }) },
           400: E[400],
-          401: errorResponse('פרטים שגויים', 'UNAUTHORIZED', 'שם משתמש או סיסמה שגויים'),
+          401: errorResponse('פרטים שגויים', 'UNAUTHORIZED', 'כתובת מייל או סיסמה שגויים'),
         },
       },
     },

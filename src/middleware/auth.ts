@@ -11,7 +11,7 @@ export type Role = 'MANAGER' | 'MEMBER';
 /** The logged-in user, attached to every authenticated request. */
 export interface AuthUser {
   id: number;
-  username: string;
+  email: string;
   displayName: string;
   avatar: Avatar;
   color: string;
@@ -56,7 +56,7 @@ export const requireAuth = asyncHandler(async (req: Request, _res: Response, nex
 
   req.user = {
     id: user.id,
-    username: user.username,
+    email: user.email,
     displayName: user.displayName,
     avatar: user.avatar,
     color: user.color,

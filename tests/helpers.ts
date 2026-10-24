@@ -25,21 +25,21 @@ export function useCleanDatabase() {
 export const setToday = (day: string) => setTodayForTests(day);
 
 let counter = 0;
-const uniqueName = (prefix: string) => `${prefix}${++counter}`;
+const uniqueEmail = (prefix: string) => `${prefix}${++counter}@example.com`;
 
 export async function registerManager(groupName = 'הקבוצה שלנו') {
-  const username = uniqueName('mgr');
-  const res = await api().post('/api/auth/register').send({ username, password: 'Secret123', displayName: 'מנהל', avatar: 'LION', groupName });
+  const email = uniqueEmail('mgr');
+  const res = await api().post('/api/auth/register').send({ email, password: 'Secret123', displayName: 'מנהל', avatar: 'LION', groupName });
   if (res.status !== 201) throw new Error(`register manager failed: ${JSON.stringify(res.body)}`);
   const group = await prisma.group.findUniqueOrThrow({ where: { id: res.body.user.group.id } });
-  return { token: res.body.token as string, user: res.body.user, joinCode: group.joinCode, username };
+  return { token: res.body.token as string, user: res.body.user, joinCode: group.joinCode, email };
 }
 
 export async function registerMember(joinCode: string, displayName = 'חבר') {
-  const username = uniqueName('mem');
-  const res = await api().post('/api/auth/register').send({ username, password: 'Secret123', displayName, avatar: 'OWL', joinCode });
+  const email = uniqueEmail('mem');
+  const res = await api().post('/api/auth/register').send({ email, password: 'Secret123', displayName, avatar: 'OWL', joinCode });
   if (res.status !== 201) throw new Error(`register member failed: ${JSON.stringify(res.body)}`);
-  return { token: res.body.token as string, user: res.body.user, username };
+  return { token: res.body.token as string, user: res.body.user, email };
 }
 
 export const publicChallenge = (overrides: Record<string, unknown> = {}) => ({

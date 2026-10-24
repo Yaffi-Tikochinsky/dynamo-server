@@ -20,7 +20,7 @@ export const SCALE_MAX: Record<Scale, number> = { YES_NO: 1, RATING: 10 };
 export const SCALE_LABELS: Record<Scale, string> = { YES_NO: 'כן/לא', RATING: 'דירוג 1–10' };
 
 export const LIMITS = {
-  usernameMin: 3, usernameMax: 20,
+  emailMax: 254,
   passwordMin: 8, passwordMax: 64,
   displayNameMin: 2, displayNameMax: 30,
   groupNameMin: 2, groupNameMax: 40,

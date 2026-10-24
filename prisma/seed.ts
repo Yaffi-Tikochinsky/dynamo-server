@@ -18,7 +18,7 @@ function demoPassword(): string {
 }
 
 async function main() {
-  if (await prisma.user.findUnique({ where: { username: 'admin' } })) {
+  if (await prisma.user.findUnique({ where: { email: 'admin@example.com' } })) {
     console.log('Demo data already exists – nothing to do.');
     return;
   }
@@ -27,11 +27,11 @@ async function main() {
 
   // ----- Demo group -----
   const group = await prisma.group.create({ data: { name: 'משפחת לוי (הדגמה)', joinCode: 'DEMO2026' } });
-  const people: { username: string; displayName: string; avatar: Avatar }[] = [
-    { username: 'admin', displayName: 'אבא (מנהל)', avatar: 'LION' },
-    { username: 'noa', displayName: 'נועה', avatar: 'OWL' },
-    { username: 'dani', displayName: 'דני', avatar: 'ROCKET' },
-    { username: 'yossi', displayName: 'יוסי', avatar: 'TURTLE' },
+  const people: { email: string; displayName: string; avatar: Avatar }[] = [
+    { email: 'admin@example.com', displayName: 'אבא (מנהל)', avatar: 'LION' },
+    { email: 'noa@example.com', displayName: 'נועה', avatar: 'OWL' },
+    { email: 'dani@example.com', displayName: 'דני', avatar: 'ROCKET' },
+    { email: 'yossi@example.com', displayName: 'יוסי', avatar: 'TURTLE' },
   ];
   const users = [];
   for (const [i, p] of people.entries()) {
@@ -43,7 +43,7 @@ async function main() {
   // ----- Second group, to show that groups can't see each other -----
   const other = await prisma.group.create({ data: { name: 'קבוצה אחרת (הדגמה)', joinCode: 'OTHER123' } });
   const otherUser = await prisma.user.create({
-    data: { username: 'other', displayName: 'משתמש מקבוצה אחרת', avatar: 'CAT', passwordHash, color: MEMBER_COLORS[0], groupId: other.id },
+    data: { email: 'other@example.com', displayName: 'משתמש מקבוצה אחרת', avatar: 'CAT', passwordHash, color: MEMBER_COLORS[0], groupId: other.id },
   });
   await prisma.group.update({ where: { id: other.id }, data: { managerId: otherUser.id } });
 
@@ -125,7 +125,7 @@ async function main() {
   await challenge({ title: 'אתגר של קבוצה אחרת', scale: 'YES_NO', visibility: 'PUBLIC', start: -2, end: 10, joinWindowDays: 2, creatorId: otherUser.id, groupId: other.id });
 
   console.log('Demo data created.');
-  console.log('Users: admin (manager), noa, dani, yossi – group code DEMO2026; other – a separate group.');
+  console.log('Users: admin@example.com (manager), noa@, dani@, yossi@example.com – group code DEMO2026; other@example.com – a separate group.');
 }
 
 main()

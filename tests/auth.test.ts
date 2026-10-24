@@ -33,10 +33,10 @@ describe('general endpoints', () => {
 
 describe('registration', () => {
   it('creating a group makes the user its manager and returns a token', async () => {
-    const res = await api().post('/api/auth/register').send({ username: 'Dad_1', password: 'Secret123', displayName: 'אבא', avatar: 'LION', groupName: 'משפחת כהן' });
+    const res = await api().post('/api/auth/register').send({ email: ' Dad@Example.COM ', password: 'Secret123', displayName: 'אבא', avatar: 'LION', groupName: 'משפחת כהן' });
     expect(res.status).toBe(201);
     expect(res.body.token).toBeTypeOf('string');
-    expect(res.body.user).toMatchObject({ username: 'dad_1', role: 'MANAGER', group: { name: 'משפחת כהן' } });
+    expect(res.body.user).toMatchObject({ email: 'dad@example.com', role: 'MANAGER', group: { name: 'משפחת כהן' } });
     expect(res.body.user).not.toHaveProperty('passwordHash');
   });
 
@@ -49,28 +49,28 @@ describe('registration', () => {
   });
 
   it('an unknown join code returns 404 with a field error', async () => {
-    const res = await api().post('/api/auth/register').send({ username: 'abc', password: 'Secret123', displayName: 'אבג', avatar: 'CAT', joinCode: 'NOPE99' });
+    const res = await api().post('/api/auth/register').send({ email: 'abc@example.com', password: 'Secret123', displayName: 'אבג', avatar: 'CAT', joinCode: 'NOPE99' });
     expect(res.status).toBe(404);
     expect(res.body.error.details[0].field).toBe('joinCode');
   });
 
-  it('a taken username returns 409', async () => {
+  it('an email that is already registered returns 409 (any letter case)', async () => {
     const manager = await registerManager();
-    const res = await api().post('/api/auth/register').send({ username: manager.username, password: 'Secret123', displayName: 'שוב', avatar: 'CAT', groupName: 'עוד קבוצה' });
+    const res = await api().post('/api/auth/register').send({ email: manager.email.toUpperCase(), password: 'Secret123', displayName: 'שוב', avatar: 'CAT', groupName: 'עוד קבוצה' });
     expect(res.status).toBe(409);
     expect(res.body.error.code).toBe('CONFLICT');
   });
 
-  it('validates fields: weak password, bad avatar, both code and group name', async () => {
-    const res = await api().post('/api/auth/register').send({ username: 'x!', password: 'short', displayName: 'א', avatar: 'DRAGON', joinCode: 'ABCDEF', groupName: 'קבוצה' });
+  it('validates fields: bad email, weak password, bad avatar, both code and group name', async () => {
+    const res = await api().post('/api/auth/register').send({ email: 'not-an-email', password: 'short', displayName: 'א', avatar: 'DRAGON', joinCode: 'ABCDEF', groupName: 'קבוצה' });
     expect(res.status).toBe(400);
     expect(res.body.error.code).toBe('VALIDATION_ERROR');
     const fields = res.body.error.details.map((d: { field: string }) => d.field);
-    expect(fields).toEqual(expect.arrayContaining(['username', 'password', 'displayName', 'avatar']));
+    expect(fields).toEqual(expect.arrayContaining(['email', 'password', 'displayName', 'avatar']));
   });
 
   it('requires a join code or a group name', async () => {
-    const res = await api().post('/api/auth/register').send({ username: 'lonely', password: 'Secret123', displayName: 'בודד', avatar: 'CAT' });
+    const res = await api().post('/api/auth/register').send({ email: 'lonely@example.com', password: 'Secret123', displayName: 'בודד', avatar: 'CAT' });
     expect(res.status).toBe(400);
   });
 });
@@ -78,15 +78,15 @@ describe('registration', () => {
 describe('login and token checks', () => {
   it('logs in with correct details', async () => {
     const manager = await registerManager();
-    const res = await api().post('/api/auth/login').send({ username: manager.username.toUpperCase(), password: 'Secret123' });
+    const res = await api().post('/api/auth/login').send({ email: manager.email.toUpperCase(), password: 'Secret123' });
     expect(res.status).toBe(200);
     expect(res.body.user.role).toBe('MANAGER');
   });
 
   it('rejects a wrong password and an unknown user with the same 401 message', async () => {
     const manager = await registerManager();
-    const wrong = await api().post('/api/auth/login').send({ username: manager.username, password: 'Wrong1234' });
-    const unknown = await api().post('/api/auth/login').send({ username: 'ghost', password: 'Wrong1234' });
+    const wrong = await api().post('/api/auth/login').send({ email: manager.email, password: 'Wrong1234' });
+    const unknown = await api().post('/api/auth/login').send({ email: 'ghost@example.com', password: 'Wrong1234' });
     expect(wrong.status).toBe(401);
     expect(unknown.status).toBe(401);
     expect(wrong.body.error.message).toBe(unknown.body.error.message);

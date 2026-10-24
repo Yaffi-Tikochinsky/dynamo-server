@@ -50,7 +50,7 @@
 | 403 | `FORBIDDEN` | אין הרשאה |
 | 403 | `RESULTS_LOCKED` | התוצאות נעולות. `details.reason`: `NOT_PARTICIPANT` או `MISSING_REPORTS` |
 | 404 | `NOT_FOUND` | לא קיים, או שאין גישה אליו |
-| 409 | `CONFLICT` | כבר קיים: שם משתמש תפוס, קוד תפוס, כבר הצטרף, כבר דיווח |
+| 409 | `CONFLICT` | כבר קיים: מייל רשום, קוד תפוס, כבר הצטרף, כבר דיווח |
 | 429 | `TOO_MANY_REQUESTS` | יותר מדי ניסיונות התחברות: לחכות כמה דקות |
 | 500 | `INTERNAL_ERROR` | תקלה בשרת |
 
@@ -79,20 +79,20 @@
 ## 6. הכתובות בפירוט
 
 ### הרשמה – `POST /api/auth/register`
-שדות חובה: `username` (3–20, אותיות באנגלית/ספרות/קו תחתון), `password` (8–64, לפחות אות וספרה), `displayName` (2–30), `avatar`.
+שדות חובה: `email` (כתובת מייל תקינה; אין הבדל בין אותיות גדולות לקטנות), `password` (8–64, לפחות אות וספרה), `displayName` (2–30), `avatar`.
 בנוסף **בדיוק אחד** מהשניים: `joinCode` (קוד קבוצה קיימת) או `groupName` (2–40, קבוצה חדשה – והנרשם הופך למנהל).
 ```json
-{ "username": "noa", "password": "Secret123", "displayName": "נועה", "avatar": "OWL", "joinCode": "DEMO2026" }
+{ "email": "noa@example.com", "password": "Secret123", "displayName": "נועה", "avatar": "OWL", "joinCode": "DEMO2026" }
 ```
 הצלחה **201**:
 ```json
-{ "token": "eyJhbGciOi...", "user": { "id": 7, "username": "noa", "displayName": "נועה", "avatar": "OWL",
+{ "token": "eyJhbGciOi...", "user": { "id": 7, "email": "noa@example.com", "displayName": "נועה", "avatar": "OWL",
   "color": "#EB6834", "role": "MEMBER", "group": { "id": 2, "name": "משפחת לוי" } } }
 ```
-שגיאות: 400 (שדות), 404 עם `details[0].field = "joinCode"` (קוד לא נמצא), 409 (שם משתמש תפוס).
+שגיאות: 400 (שדות), 404 עם `details[0].field = "joinCode"` (קוד לא נמצא), 409 (המייל כבר רשום, `details[0].field = "email"`).
 
 ### התחברות – `POST /api/auth/login`
-`{ "username": "noa", "password": "Secret123" }` → **200** באותו מבנה כמו בהרשמה. פרטים שגויים → **401**.
+`{ "email": "noa@example.com", "password": "Secret123" }` → **200** באותו מבנה כמו בהרשמה. פרטים שגויים → **401**.
 
 ### `GET /api/auth/me`
 מחזיר את אובייקט ה-`user` (בלי token).

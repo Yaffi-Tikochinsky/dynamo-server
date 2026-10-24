@@ -37,7 +37,7 @@ describe('group', () => {
     expect(res.status).toBe(200);
     expect(res.body.joinCode).toBe('COHEN2026');
     // the old code no longer works
-    const late = await api().post('/api/auth/register').send({ username: 'late1', password: 'Secret123', displayName: 'מאחר', avatar: 'CAT', joinCode: manager.joinCode });
+    const late = await api().post('/api/auth/register').send({ email: 'late1@example.com', password: 'Secret123', displayName: 'מאחר', avatar: 'CAT', joinCode: manager.joinCode });
     expect(late.status).toBe(404);
     // taken
     const taken = await api().post('/api/group/join-code').set(auth(other.token)).send({ mode: 'custom', code: 'COHEN2026' });
