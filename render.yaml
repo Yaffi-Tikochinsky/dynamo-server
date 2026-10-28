@@ -1,11 +1,12 @@
 # Render Blueprint – creates the web service for the backend.
-# The PostgreSQL database is NOT created here: use a free PostgreSQL provider (e.g. Supabase)
+# The PostgreSQL database is NOT created here: use a free PostgreSQL provider (e.g. Neon or Supabase)
 # and paste its connection string into DATABASE_URL. See START-HERE.md.
 services:
   - type: web
     name: challenges-backend
     runtime: node
     plan: free
+    region: frankfurt # close to the Neon database (AWS eu-central-1)
     # --include=dev: TypeScript is needed for the build even when NODE_ENV=production
     buildCommand: npm ci --include=dev && npm run build
     # Applies pending database migrations, then starts the server
