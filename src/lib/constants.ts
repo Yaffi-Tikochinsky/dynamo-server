@@ -8,10 +8,10 @@ export const AVATAR_EMOJI: Record<Avatar, string> = {
   TREE: '🌳', CACTUS: '🌵', MOUNTAIN: '⛰️', BOOK: '📚', GUITAR: '🎸', SOCCER: '⚽',
 };
 
-/** Member colors, chosen to be easy to tell apart in charts. */
+/** Member colors: warm tones that match the site's design, still easy to tell apart in charts. */
 export const MEMBER_COLORS = [
-  '#2A78D6', '#EB6834', '#1BAF7A', '#EDA100', '#E87BA4',
-  '#008300', '#6250D6', '#E34948', '#0F9BB5', '#8A5A2B',
+  '#FFB020', '#FF6B5A', '#FFE27A', '#FF8FB8', '#F27A3A',
+  '#C7E36B', '#FFC9A0', '#E8A0FF', '#7FE0C8', '#D9A066',
 ] as const;
 
 /** Highest value of one daily report, per scale. */
