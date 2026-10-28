@@ -31,7 +31,7 @@ async function main() {
   // ----- Demo group -----
   const group = await prisma.group.create({ data: { name: 'חברות בנפש✨', joinCode: 'DEMO2026' } });
   const people: { email: string; displayName: string; avatar: Avatar }[] = [
-    { email: 'rachely@example.com', displayName: 'רחלי פרידמן (מנהלת)', avatar: 'BUTTERFLY' },
+    { email: 'rachely@example.com', displayName: 'רחלי פרידמן', avatar: 'BUTTERFLY' },
     { email: 'chani@example.com', displayName: 'חני ויס', avatar: 'OWL' },
     { email: 'brachy@example.com', displayName: 'ברכי רוזנברג', avatar: 'DOLPHIN' },
     { email: 'miri@example.com', displayName: 'מירי קליין', avatar: 'PANDA' },
