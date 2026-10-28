@@ -107,7 +107,7 @@
 2. **Swagger:** פותחים `<SERVER>/api-docs`. מופיע דף עם כל ה-API.
 3. **הרשמה או התחברות מתוך Swagger:**
    - פותחים `POST /api/auth/register` → **Try it out** → בוחרים את הדוגמה **create** (קבוצה חדשה), משנים את `email` לכתובת שלכם, ולוחצים **Execute**.
-   - או, אם הרצתם Seed: `POST /api/auth/login` עם `admin@example.com` והסיסמה שבחרתם.
+   - או, אם הרצתם Seed: `POST /api/auth/login` עם `rachely@example.com` והסיסמה שבחרתם.
 4. **קבלת JWT:** בתשובה (Response body) יש `"token": "eyJ..."`. מעתיקים את הערך, בלי המירכאות.
 5. **Authorize:** לוחצים על **Authorize** 🔒 למעלה, מדביקים את ה-token ולוחצים **Authorize** ואז **Close**.
 6. **קריאה מוגנת:** `GET /api/auth/me` → **Try it out** → **Execute**. צריך לקבל 200 עם הפרטים שלכם.

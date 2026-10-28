@@ -25,21 +25,21 @@ const secured = [{ bearerAuth: [] }];
 const idPath = [{ name: 'id', in: 'path', required: true, description: 'מזהה האתגר', schema: { type: 'integer', example: 12 } }];
 
 const userExample = {
-  id: 7, email: 'noa@example.com', displayName: 'נועה', avatar: 'OWL', color: '#EB6834', role: 'MEMBER',
-  group: { id: 2, name: 'משפחת כהן' },
+  id: 7, email: 'chani@example.com', displayName: 'חני ויס', avatar: 'OWL', color: '#EB6834', role: 'MEMBER',
+  group: { id: 2, name: 'חברות בנפש✨' },
 };
 const summaryExample = {
-  id: 12, title: '20 דפים ביום', scale: 'YES_NO', visibility: 'PUBLIC', status: 'ACTIVE',
-  startDate: '2026-11-01', endDate: '2026-11-30', prize: 'ארוחת בוקר במסעדה', joinWindowDays: 5,
+  id: 12, title: '2 הלכות ביום', scale: 'YES_NO', visibility: 'PUBLIC', status: 'ACTIVE',
+  startDate: '2026-11-01', endDate: '2026-11-30', prize: 'כרטיספר על סך 70 ש"ח', joinWindowDays: 5,
   joinDeadline: '2026-11-06', participantsCount: 4, isJoined: true, canJoin: false,
   myStatus: { reportedToday: false, missingCount: 2 }, previousChallengeId: 9,
 };
 const detailsExample = {
   ...summaryExample,
-  description: 'קוראים ספר לבחירה',
-  creator: { id: 3, displayName: 'אבא' },
-  previousChallenge: { id: 9, title: '20 דפים ביום – חשוון' },
-  participants: [{ id: 7, displayName: 'נועה', avatar: 'OWL', color: '#EB6834', firstDay: '2026-11-01' }],
+  description: 'כל אחת לומדת 2 הלכות ביום בספר שמירת הלשון',
+  creator: { id: 3, displayName: 'רחלי פרידמן' },
+  previousChallenge: { id: 9, title: '2 הלכות ביום – חשוון' },
+  participants: [{ id: 7, displayName: 'חני ויס', avatar: 'OWL', color: '#EB6834', firstDay: '2026-11-01' }],
   permissions: { canEdit: false, canDelete: false, canJoin: false, canLeave: false, canRenew: false, canViewResults: false, lockedReason: 'MISSING_REPORTS' },
   editableFields: [],
   suggestedRenewalDates: null,
@@ -63,7 +63,7 @@ export const openApiDocument: Obj = {
     version: '1.0.0',
     description:
       'שרת לאתר מעקב אתגרים קבוצתי.\n\n' +
-      '**איך מתחברים כאן:** הריצו `POST /api/auth/login` (משתמשי הדגמה: `admin@example.com` או `noa@example.com`, סיסמת ההדגמה מוגדרת ב-Seed), ' +
+      '**איך מתחברים כאן:** הריצו `POST /api/auth/login` (משתמשי הדגמה: `rachely@example.com` או `chani@example.com`, סיסמת ההדגמה מוגדרת ב-Seed), ' +
       'העתיקו את ה-token מהתשובה, לחצו על הכפתור **Authorize** למעלה והדביקו אותו. מעכשיו כל הקריאות נשלחות עם ה-Token.\n\n' +
       'תאריכים הם מחרוזות `YYYY-MM-DD` לפי שעון ישראל. כל שגיאה מוחזרת במבנה `{ error: { code, message, details? } }`.',
   },
@@ -196,8 +196,8 @@ export const openApiDocument: Obj = {
                 },
               },
               examples: {
-                join: { summary: 'הצטרפות עם קוד', value: { email: 'noa2@example.com', password: 'Secret123', displayName: 'נועה', avatar: 'OWL', joinCode: 'DEMO2026' } },
-                create: { summary: 'קבוצה חדשה', value: { email: 'dad@example.com', password: 'Secret123', displayName: 'אבא', avatar: 'LION', groupName: 'משפחת כהן' } },
+                join: { summary: 'הצטרפות עם קוד', value: { email: 'chani2@example.com', password: 'Secret123', displayName: 'חני ויס', avatar: 'OWL', joinCode: 'DEMO2026' } },
+                create: { summary: 'קבוצה חדשה', value: { email: 'rachely2@example.com', password: 'Secret123', displayName: 'רחלי פרידמן', avatar: 'BUTTERFLY', groupName: 'חברות בנפש✨' } },
               },
             },
           },
@@ -213,7 +213,7 @@ export const openApiDocument: Obj = {
     '/api/auth/login': {
       post: {
         tags: ['Auth'], summary: 'התחברות – מחזיר JWT', security: [],
-        requestBody: { required: true, content: json({ type: 'object', required: ['email', 'password'], properties: { email: { type: 'string', format: 'email' }, password: { type: 'string' } } }, { email: 'admin@example.com', password: 'Demo1234' }) },
+        requestBody: { required: true, content: json({ type: 'object', required: ['email', 'password'], properties: { email: { type: 'string', format: 'email' }, password: { type: 'string' } } }, { email: 'rachely@example.com', password: 'Demo1234' }) },
         responses: {
           200: { description: 'מחובר', content: json(ref('AuthResponse'), { token: 'eyJhbGciOi...', user: { ...userExample, role: 'MANAGER' } }) },
           400: E[400],
@@ -233,15 +233,15 @@ export const openApiDocument: Obj = {
         responses: {
           200: {
             description: 'הצלחה',
-            content: json({ type: 'object' }, { id: 2, name: 'משפחת כהן', joinCode: 'X7K2PQ', members: [{ id: 3, displayName: 'אבא', avatar: 'LION', color: '#2A78D6', isManager: true, challengesCount: 3 }] }),
+            content: json({ type: 'object' }, { id: 2, name: 'חברות בנפש✨', joinCode: 'X7K2PQ', members: [{ id: 3, displayName: 'רחלי פרידמן', avatar: 'BUTTERFLY', color: '#2A78D6', isManager: true, challengesCount: 3 }] }),
           },
           401: E[401],
         },
       },
       patch: {
         tags: ['Group'], summary: 'שינוי שם הקבוצה (מנהל)', security: secured,
-        requestBody: { required: true, content: json({ type: 'object', required: ['name'], properties: { name: { type: 'string', minLength: 2, maxLength: 40 } } }, { name: 'משפחת כהן המורחבת' }) },
-        responses: { 200: { description: 'עודכן', content: json({ type: 'object' }, { id: 2, name: 'משפחת כהן המורחבת' }) }, 400: E[400], 401: E[401], 403: E[403] },
+        requestBody: { required: true, content: json({ type: 'object', required: ['name'], properties: { name: { type: 'string', minLength: 2, maxLength: 40 } } }, { name: 'חברות בנפש – מחזור תשפ"ז' }) },
+        responses: { 200: { description: 'עודכן', content: json({ type: 'object' }, { id: 2, name: 'חברות בנפש – מחזור תשפ"ז' }) }, 400: E[400], 401: E[401], 403: E[403] },
       },
     },
     '/api/group/join-code': {
@@ -290,8 +290,8 @@ export const openApiDocument: Obj = {
             'application/json': {
               schema: ref('ChallengeCreate'),
               examples: {
-                public: { summary: 'אתגר ציבורי', value: { title: '20 דפים ביום', description: 'קוראים ספר לבחירה', scale: 'YES_NO', visibility: 'PUBLIC', startDate: '2026-12-01', endDate: '2026-12-31', prize: 'ארוחת בוקר', joinWindowDays: 5 } },
-                private: { summary: 'אתגר פרטי', value: { title: 'שתיית מים', scale: 'RATING', visibility: 'PRIVATE', startDate: '2026-12-01', endDate: '2026-12-14' } },
+                public: { summary: 'אתגר ציבורי', value: { title: '2 הלכות ביום', description: 'כל אחת לומדת 2 הלכות ביום בספר שמירת הלשון', scale: 'YES_NO', visibility: 'PUBLIC', startDate: '2026-12-01', endDate: '2026-12-31', prize: 'כרטיספר על סך 70 ש"ח', joinWindowDays: 5 } },
+                private: { summary: 'אתגר פרטי', value: { title: 'פנקס הכרת הטוב', scale: 'RATING', visibility: 'PRIVATE', startDate: '2026-12-01', endDate: '2026-12-14' } },
               },
             },
           },
@@ -308,7 +308,7 @@ export const openApiDocument: Obj = {
       patch: {
         tags: ['Challenges'], summary: 'עריכת אתגר',
         description: 'שולחים רק שדות לשינוי. לפני ההתחלה – הכול (חוץ מ-visibility). אחרי ההתחלה – רק title, description, prize והארכת endDate. אתגר שהסתיים – לא ניתן לעריכה.', security: secured,
-        requestBody: { required: true, content: json(ref('ChallengeUpdate'), { title: '25 דפים ביום', endDate: '2027-01-05' }) },
+        requestBody: { required: true, content: json(ref('ChallengeUpdate'), { title: '3 הלכות ביום', endDate: '2027-01-05' }) },
         responses: { 200: { description: 'עודכן', content: json(ref('ChallengeDetails'), detailsExample) }, 400: E['400rule'], 401: E[401], 403: E[403], 404: E[404] },
       },
       delete: {
@@ -365,8 +365,8 @@ export const openApiDocument: Obj = {
           200: {
             description: 'הצלחה',
             content: json({ type: 'object' }, {
-              dataUntil: '2026-11-02', status: 'ACTIVE', prize: 'ארוחת בוקר',
-              rows: [{ rank: 1, user: { id: 7, displayName: 'נועה', avatar: 'OWL', color: '#EB6834' }, percentage: 87.5, daysCounted: 8, currentStreak: 5, isMe: true }],
+              dataUntil: '2026-11-02', status: 'ACTIVE', prize: 'כרטיספר על סך 70 ש"ח',
+              rows: [{ rank: 1, user: { id: 7, displayName: 'חני ויס', avatar: 'OWL', color: '#EB6834' }, percentage: 87.5, daysCounted: 8, currentStreak: 5, isMe: true }],
               winners: null,
             }),
           },
@@ -384,7 +384,7 @@ export const openApiDocument: Obj = {
             description: 'הצלחה',
             content: json({ type: 'object' }, {
               dataUntil: '2026-11-02',
-              series: [{ key: 'u7', id: 7, displayName: 'נועה', avatar: 'OWL', color: '#EB6834' }],
+              series: [{ key: 'u7', id: 7, displayName: 'חני ויס', avatar: 'OWL', color: '#EB6834' }],
               points: [{ date: '2026-11-01', u7: 100 }, { date: '2026-11-02', u7: 50 }],
             }),
           },

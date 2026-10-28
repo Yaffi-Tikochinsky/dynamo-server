@@ -18,7 +18,7 @@ function demoPassword(): string {
 }
 
 async function main() {
-  if (await prisma.user.findUnique({ where: { email: 'admin@example.com' } })) {
+  if (await prisma.user.findUnique({ where: { email: 'rachely@example.com' } })) {
     console.log('Demo data already exists – nothing to do.');
     return;
   }
@@ -26,24 +26,24 @@ async function main() {
   const T = getToday();
 
   // ----- Demo group -----
-  const group = await prisma.group.create({ data: { name: 'משפחת לוי (הדגמה)', joinCode: 'DEMO2026' } });
+  const group = await prisma.group.create({ data: { name: 'חברות בנפש✨', joinCode: 'DEMO2026' } });
   const people: { email: string; displayName: string; avatar: Avatar }[] = [
-    { email: 'admin@example.com', displayName: 'אבא (מנהל)', avatar: 'LION' },
-    { email: 'noa@example.com', displayName: 'נועה', avatar: 'OWL' },
-    { email: 'dani@example.com', displayName: 'דני', avatar: 'ROCKET' },
-    { email: 'yossi@example.com', displayName: 'יוסי', avatar: 'TURTLE' },
+    { email: 'rachely@example.com', displayName: 'רחלי פרידמן (מנהלת)', avatar: 'BUTTERFLY' },
+    { email: 'chani@example.com', displayName: 'חני ויס', avatar: 'OWL' },
+    { email: 'brachy@example.com', displayName: 'ברכי רוזנברג', avatar: 'DOLPHIN' },
+    { email: 'miri@example.com', displayName: 'מירי קליין', avatar: 'PANDA' },
   ];
   const users = [];
   for (const [i, p] of people.entries()) {
     users.push(await prisma.user.create({ data: { ...p, passwordHash, color: MEMBER_COLORS[i], groupId: group.id } }));
   }
-  const [admin, noa, dani, yossi] = users;
-  await prisma.group.update({ where: { id: group.id }, data: { managerId: admin.id } });
+  const [rachely, chani, brachy, miri] = users;
+  await prisma.group.update({ where: { id: group.id }, data: { managerId: rachely.id } });
 
   // ----- Second group, to show that groups can't see each other -----
-  const other = await prisma.group.create({ data: { name: 'קבוצה אחרת (הדגמה)', joinCode: 'OTHER123' } });
+  const other = await prisma.group.create({ data: { name: 'משפחת שפירא (הדגמה)', joinCode: 'OTHER123' } });
   const otherUser = await prisma.user.create({
-    data: { email: 'other@example.com', displayName: 'משתמש מקבוצה אחרת', avatar: 'CAT', passwordHash, color: MEMBER_COLORS[0], groupId: other.id },
+    data: { email: 'other@example.com', displayName: 'משתמש ממשפחה אחרת', avatar: 'CAT', passwordHash, color: MEMBER_COLORS[0], groupId: other.id },
   });
   await prisma.group.update({ where: { id: other.id }, data: { managerId: otherUser.id } });
 
@@ -83,49 +83,50 @@ async function main() {
     await prisma.report.createMany({ data: rows });
   }
 
-  // 1. Active public challenge (yes/no). Dani has missing days, so his results are locked.
-  const reading = await challenge({
-    title: '20 דפים ביום', description: 'כל אחד קורא ספר לבחירתו – לפחות 20 עמודים ביום.',
-    scale: 'YES_NO', visibility: 'PUBLIC', start: -10, end: 20, prize: 'ארוחת בוקר במסעדה', joinWindowDays: 5, creatorId: admin.id,
+  // 1. Active public challenge (yes/no). Brachy has missing days, so her results are locked.
+  const halachot = await challenge({
+    title: '2 הלכות ביום', description: 'כל אחת לומדת 2 הלכות ביום בספר שמירת הלשון',
+    scale: 'YES_NO', visibility: 'PUBLIC', start: -10, end: 20, prize: 'כרטיספר על סך 70 ש"ח', joinWindowDays: 5, creatorId: rachely.id,
   });
-  await participate(reading.id, admin.id, 'YES_NO', -10, -1, [], 1);
-  await participate(reading.id, noa.id, 'YES_NO', -10, 0, [], 2);
-  await participate(reading.id, dani.id, 'YES_NO', -10, -3, [], 3);
-  await participate(reading.id, yossi.id, 'YES_NO', -6, -1, [], 4);
+  await participate(halachot.id, rachely.id, 'YES_NO', -10, -1, [], 1);
+  await participate(halachot.id, chani.id, 'YES_NO', -10, 0, [], 2);
+  await participate(halachot.id, brachy.id, 'YES_NO', -10, -3, [], 3);
+  await participate(halachot.id, miri.id, 'YES_NO', -6, -1, [], 4);
 
   // 2. Ended public challenge (rating) – shows winners.
-  const water = await challenge({
-    title: 'שתיית 8 כוסות מים', description: 'דרגו מ-1 עד 10 כמה הצלחתם לשתות.',
-    scale: 'RATING', visibility: 'PUBLIC', start: -40, end: -11, prize: 'כרטיס לסרט', joinWindowDays: 3, creatorId: admin.id,
+  const shmiratHalashon = await challenge({
+    title: 'שמירת הלשון - שעה ביום', description: 'כל אחת בוחרת שעה קבועה ביום של שמירת הלשון ומדרגת עד כמה היא הצליחה!!!',
+    scale: 'RATING', visibility: 'PUBLIC', start: -40, end: -11, prize: 'מטען נייד עם הטבעת שם', joinWindowDays: 3, creatorId: rachely.id,
   });
-  await participate(water.id, admin.id, 'RATING', -40, -11, [-30, -29], 5);
-  await participate(water.id, noa.id, 'RATING', -40, -11, [], 6);
-  await participate(water.id, dani.id, 'RATING', -38, -11, [-20], 7);
+  await participate(shmiratHalashon.id, rachely.id, 'RATING', -40, -11, [-30, -29], 5);
+  await participate(shmiratHalashon.id, chani.id, 'RATING', -40, -11, [], 6);
+  await participate(shmiratHalashon.id, brachy.id, 'RATING', -38, -11, [-20], 7);
 
   // 3. Renewal of challenge 2 (active, linked to the previous one).
-  const water2 = await challenge({
-    title: 'שתיית 8 כוסות מים – סבב 2', scale: 'RATING', visibility: 'PUBLIC', start: -3, end: 26,
-    prize: 'כרטיס לסרט', joinWindowDays: 3, creatorId: admin.id, previousChallengeId: water.id,
+  const shmiratHalashon2 = await challenge({
+    title: 'שמירת הלשון - שעה ביום – סבב 2', description: 'כל אחת בוחרת שעה קבועה ביום של שמירת הלשון ומדרגת עד כמה היא הצליחה!!!',
+    scale: 'RATING', visibility: 'PUBLIC', start: -3, end: 26,
+    prize: 'מטען נייד עם הטבעת שם', joinWindowDays: 3, creatorId: rachely.id, previousChallengeId: shmiratHalashon.id,
   });
-  await participate(water2.id, noa.id, 'RATING', -3, -1, [], 8);
-  await participate(water2.id, admin.id, 'RATING', -3, 0, [], 9);
+  await participate(shmiratHalashon2.id, chani.id, 'RATING', -3, -1, [], 8);
+  await participate(shmiratHalashon2.id, rachely.id, 'RATING', -3, 0, [], 9);
 
   // 4. Upcoming public challenge – people can still join or leave.
-  const running = await challenge({
-    title: 'ריצת בוקר', description: 'לפחות 15 דקות ריצה או הליכה מהירה.',
-    scale: 'YES_NO', visibility: 'PUBLIC', start: 3, end: 30, prize: 'נעלי ספורט', joinWindowDays: 2, creatorId: admin.id,
+  const sleep = await challenge({
+    title: 'שינה בזמן', description: 'עד 2:00 בלילה כולן במיטה!!!!!',
+    scale: 'YES_NO', visibility: 'PUBLIC', start: 3, end: 30, prize: "אייס קפה מקפוצ'ינו במשלוח ישיר לסמינר😀", joinWindowDays: 2, creatorId: rachely.id,
   });
-  await participate(running.id, yossi.id, 'YES_NO', 3, null);
+  await participate(sleep.id, miri.id, 'YES_NO', 3, null);
 
-  // 5. Noa's private challenge – only she can see it.
-  const gratitude = await challenge({ title: 'יומן תודה', description: 'לכתוב 3 דברים טובים מהיום.', scale: 'YES_NO', visibility: 'PRIVATE', start: -7, end: 7, creatorId: noa.id });
-  await participate(gratitude.id, noa.id, 'YES_NO', -7, -1, [], 10);
+  // 5. Chani's private challenge – only she can see it.
+  const gratitude = await challenge({ title: 'פנקס הכרת הטוב', description: "לכתוב כל ערב 3 דברים שאני מודה עליהם לה' היום.", scale: 'YES_NO', visibility: 'PRIVATE', start: -7, end: 7, creatorId: chani.id });
+  await participate(gratitude.id, chani.id, 'YES_NO', -7, -1, [], 10);
 
   // 6. A challenge in the other group.
-  await challenge({ title: 'אתגר של קבוצה אחרת', scale: 'YES_NO', visibility: 'PUBLIC', start: -2, end: 10, joinWindowDays: 2, creatorId: otherUser.id, groupId: other.id });
+  await challenge({ title: 'שיעור משפחתי בפרשת השבוע', scale: 'YES_NO', visibility: 'PUBLIC', start: -2, end: 10, joinWindowDays: 2, creatorId: otherUser.id, groupId: other.id });
 
   console.log('Demo data created.');
-  console.log('Users: admin@example.com (manager), noa@, dani@, yossi@example.com – group code DEMO2026; other@example.com – a separate group.');
+  console.log('Users: rachely@example.com (manager), chani@, brachy@, miri@example.com – group code DEMO2026; other@example.com – a separate group.');
 }
 
 main()

@@ -82,25 +82,25 @@
 שדות חובה: `email` (כתובת מייל תקינה; אין הבדל בין אותיות גדולות לקטנות), `password` (8–64, לפחות אות וספרה), `displayName` (2–30), `avatar`.
 בנוסף **בדיוק אחד** מהשניים: `joinCode` (קוד קבוצה קיימת) או `groupName` (2–40, קבוצה חדשה – והנרשם הופך למנהל).
 ```json
-{ "email": "noa@example.com", "password": "Secret123", "displayName": "נועה", "avatar": "OWL", "joinCode": "DEMO2026" }
+{ "email": "chani@example.com", "password": "Secret123", "displayName": "חני ויס", "avatar": "OWL", "joinCode": "DEMO2026" }
 ```
 הצלחה **201**:
 ```json
-{ "token": "eyJhbGciOi...", "user": { "id": 7, "email": "noa@example.com", "displayName": "נועה", "avatar": "OWL",
-  "color": "#EB6834", "role": "MEMBER", "group": { "id": 2, "name": "משפחת לוי" } } }
+{ "token": "eyJhbGciOi...", "user": { "id": 7, "email": "chani@example.com", "displayName": "חני ויס", "avatar": "OWL",
+  "color": "#EB6834", "role": "MEMBER", "group": { "id": 2, "name": "חברות בנפש✨" } } }
 ```
 שגיאות: 400 (שדות), 404 עם `details[0].field = "joinCode"` (קוד לא נמצא), 409 (המייל כבר רשום, `details[0].field = "email"`).
 
 ### התחברות – `POST /api/auth/login`
-`{ "email": "noa@example.com", "password": "Secret123" }` → **200** באותו מבנה כמו בהרשמה. פרטים שגויים → **401**.
+`{ "email": "chani@example.com", "password": "Secret123" }` → **200** באותו מבנה כמו בהרשמה. פרטים שגויים → **401**.
 
 ### `GET /api/auth/me`
 מחזיר את אובייקט ה-`user` (בלי token).
 
 ### הקבוצה – `GET /api/group`
 ```json
-{ "id": 2, "name": "משפחת לוי", "joinCode": "DEMO2026",
-  "members": [ { "id": 1, "displayName": "אבא", "avatar": "LION", "color": "#2A78D6", "isManager": true, "challengesCount": 3 } ] }
+{ "id": 2, "name": "חברות בנפש✨", "joinCode": "DEMO2026",
+  "members": [ { "id": 1, "displayName": "רחלי פרידמן", "avatar": "BUTTERFLY", "color": "#2A78D6", "isManager": true, "challengesCount": 3 } ] }
 ```
 `joinCode` מגיע **רק למנהל**.
 - `PATCH /api/group` – `{ "name": "..." }` (2–40 תווים)
@@ -120,11 +120,11 @@
 | `sort` | `endDate` (ברירת מחדל) / `startDate` / `participants` / `title` |
 | `order` | `asc` (ברירת מחדל) / `desc` |
 
-דוגמה: `/api/challenges?status=ACTIVE&search=דפים&sort=participants&order=desc`
+דוגמה: `/api/challenges?status=ACTIVE&search=הלכות&sort=participants&order=desc`
 מחזיר מערך של **כרטיסי אתגר**:
 ```json
-{ "id": 12, "title": "20 דפים ביום", "scale": "YES_NO", "visibility": "PUBLIC", "status": "ACTIVE",
-  "startDate": "2026-11-01", "endDate": "2026-11-30", "prize": "ארוחת בוקר", "joinWindowDays": 5,
+{ "id": 12, "title": "2 הלכות ביום", "scale": "YES_NO", "visibility": "PUBLIC", "status": "ACTIVE",
+  "startDate": "2026-11-01", "endDate": "2026-11-30", "prize": "כרטיספר על סך 70 ש\"ח", "joinWindowDays": 5,
   "joinDeadline": "2026-11-06", "participantsCount": 4, "isJoined": true, "canJoin": false,
   "myStatus": { "reportedToday": false, "missingCount": 2 }, "previousChallengeId": 9 }
 ```
@@ -135,9 +135,9 @@
 ### פרטי אתגר – `GET /api/challenges/:id`
 כל השדות של הכרטיס, ובנוסף:
 ```json
-{ "description": "...", "creator": { "id": 1, "displayName": "אבא" },
+{ "description": "...", "creator": { "id": 1, "displayName": "רחלי פרידמן" },
   "previousChallenge": { "id": 9, "title": "..." },
-  "participants": [ { "id": 7, "displayName": "נועה", "avatar": "OWL", "color": "#EB6834", "firstDay": "2026-11-01" } ],
+  "participants": [ { "id": 7, "displayName": "חני ויס", "avatar": "OWL", "color": "#EB6834", "firstDay": "2026-11-01" } ],
   "permissions": { "canEdit": true, "canDelete": false, "canJoin": false, "canLeave": false,
                    "canRenew": false, "canViewResults": true, "lockedReason": null },
   "editableFields": ["title", "description", "prize", "endDate"],
@@ -190,8 +190,8 @@
 
 ### טבלת דירוג – `GET /api/challenges/:id/leaderboard`
 ```json
-{ "dataUntil": "2026-11-02", "status": "ACTIVE", "prize": "ארוחת בוקר",
-  "rows": [ { "rank": 1, "user": { "id": 7, "displayName": "נועה", "avatar": "OWL", "color": "#EB6834" },
+{ "dataUntil": "2026-11-02", "status": "ACTIVE", "prize": "כרטיספר על סך 70 ש\"ח",
+  "rows": [ { "rank": 1, "user": { "id": 7, "displayName": "חני ויס", "avatar": "OWL", "color": "#EB6834" },
               "percentage": 87.5, "daysCounted": 8, "currentStreak": 5, "isMe": true } ],
   "winners": null }
 ```
@@ -203,7 +203,7 @@
 ### גרף "הכושר השבועי" – `GET /api/challenges/:id/progress`
 ```json
 { "dataUntil": "2026-11-02",
-  "series": [ { "key": "u7", "id": 7, "displayName": "נועה", "avatar": "OWL", "color": "#EB6834" } ],
+  "series": [ { "key": "u7", "id": 7, "displayName": "חני ויס", "avatar": "OWL", "color": "#EB6834" } ],
   "points": [ { "date": "2026-11-01", "u7": 100, "u3": null }, { "date": "2026-11-02", "u7": 50, "u3": 100 } ] }
 ```
 המבנה מתאים ישירות לגרף קווים (למשל ב-Recharts):
