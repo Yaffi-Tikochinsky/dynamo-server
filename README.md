@@ -68,7 +68,7 @@ npm run dev                 # השרת עולה ב-http://localhost:3000 , תי�
 | `npm run dev` | שרת פיתוח שמתעדכן אוטומטית |
 | `npm run build` | קומפילציה ל-`dist/` |
 | `npm start` | הרצת הגרסה המקומפלת |
-| `npm run start:prod` | הרצת Migrations ואז השרת (לענן) |
+| `npm run start:prod` | הרצת Migrations, Seed (אם הוגדר `SEED_PASSWORD`) ואז השרת (לענן) |
 | `npm test` | בדיקות אוטומטיות (צריך PostgreSQL – ראו למטה) |
 | `npm run typecheck` | בדיקת טיפוסים |
 | `npm run db:migrate` | יצירת Migration חדש אחרי שינוי ב-schema.prisma |
@@ -89,7 +89,7 @@ npm run dev                 # השרת עולה ב-http://localhost:3000 , תי�
 | `chani@example.com`, `brachy@example.com`, `miri@example.com` | חברות בקבוצה (לברכי יש ימים חסרים – התוצאות נעולות לה) |
 | `other@example.com` | משתמש מ"משפחת שפירא (הדגמה)" – לבדיקה שקבוצות לא רואות זו את זו |
 
-הסיסמה בפיתוח: `Demo1234`. בפרודקשן חובה להגדיר `SEED_PASSWORD` לפני הרצת ה-Seed (אחרת הוא נעצר), כדי שלא יהיו באינטרנט חשבונות עם סיסמה ידועה.
+הסיסמה בפיתוח: `Demo1234`. בפרודקשן נתוני ההדגמה נוצרים רק אם הוגדר `SEED_PASSWORD` (והוא גם הסיסמה שלהם), כדי שלא יהיו באינטרנט חשבונות עם סיסמה ידועה. `start:prod` מריץ את ה-Seed בכל הפעלה, והוא מדלג אם הנתונים כבר קיימים.
 
 ## אבטחה בקצרה
 

@@ -79,23 +79,22 @@
    | `NODE_ENV` | `production` |
    | `NODE_VERSION` | `22` |
    | `CORS_ORIGIN` | כתובת אתר ה-React כשתהיה לכם (למשל `https://my-app.onrender.com`). עד אז אפשר `*` |
+   | `SEED_PASSWORD` | (לא חובה) סיסמה לחשבונות ההדגמה. אם מוגדרת, השרת יוצר את נתוני ההדגמה בהפעלה הראשונה |
 
-7. **Prisma Migrations:** לא צריך לעשות כלום. פקודת ה-Start (`npm run start:prod`) מריצה `prisma migrate deploy` לפני הפעלת השרת, ויוצרת או מעדכנת את הטבלאות.
+7. **Prisma Migrations:** לא צריך לעשות כלום. פקודת ה-Start (`npm run start:prod`) מריצה `prisma migrate deploy` לפני הפעלת השרת, ויוצרת או מעדכנת את הטבלאות. אחר כך היא מריצה את ה-Seed, שיוצר את נתוני ההדגמה רק אם הוגדר `SEED_PASSWORD` ורק אם הם עוד לא קיימים.
 8. **Deploy:** לוחצים **Create Web Service** (או **Deploy Web Service**). רואים לוג. בהצלחה יופיע בסוף משהו כמו `Server running on port ...`, והסטטוס יהיה **Live**.
 9. **בדיקה:** בראש הדף מופיעה כתובת השרת, למשל `https://challenges-backend.onrender.com`. ממשיכים לחלק ד.
 
-> **דרך קצרה (Blueprint):** במקום שלבים 3–6 אפשר **New +** → **Blueprint**, ולבחור את ה-Repository. Render קורא את `render.yaml` וממלא את רוב ההגדרות לבד, ואז מבקש רק `DATABASE_URL` ו-`CORS_ORIGIN`.
+> **דרך קצרה (Blueprint):** במקום שלבים 3–6 אפשר **New +** → **Blueprint**, ולבחור את ה-Repository. Render קורא את `render.yaml` וממלא את רוב ההגדרות לבד, ואז מבקש רק `DATABASE_URL`, `CORS_ORIGIN` ו-`SEED_PASSWORD`.
 
 ### נתוני הדגמה בענן (לא חובה)
 
-ב-Render החינמי אין, לפי מה שידוע לי, חלון פקודות (Shell). שתי אפשרויות:
+- **הכי פשוט:** מגדירים ב-Render את `SEED_PASSWORD`. בהפעלה הבאה השרת יוצר את נתוני ההדגמה בעצמו (פעם אחת בלבד). מתחברים עם `rachely@example.com` והסיסמה שהגדרתם.
+- **בלי נתוני הדגמה:** לא מגדירים `SEED_PASSWORD`, ונרשמים דרך Swagger או דרך האתר (חלק ד).
 
-- **הכי פשוט:** לא להשתמש ב-Seed, ולהירשם דרך Swagger או דרך האתר (חלק ד).
-- **מהמחשב שלכם** (צריך Node.js מותקן): בתיקיית הפרויקט מריצים `npm install`, ואז ב-PowerShell:
-  ```
-  $env:DATABASE_URL="<הכתובת מ-Supabase>"; $env:NODE_ENV="production"; $env:SEED_PASSWORD="<סיסמה פרטית לחשבונות ההדגמה>"; npm run db:seed
-  ```
-  בלי `SEED_PASSWORD` ה-Seed יסרב לרוץ בפרודקשן. זה בכוונה, כדי שלא יהיו באינטרנט חשבונות עם סיסמה ידועה.
+בלי `SEED_PASSWORD` אין בפרודקשן חשבונות הדגמה בכלל. זה בכוונה, כדי שלא יהיו באינטרנט חשבונות עם סיסמה ידועה.
+
+> **נטפרי:** ייתכן שמהמחשב לא תוכלו להתחבר ישירות למסד הנתונים בענן (שגיאה `P1011 ... server does not support TLS`). זה לא משנה – Render מתחבר בלי בעיה, והוא גם יוצר את הטבלאות ואת נתוני ההדגמה.
 
 ---
 

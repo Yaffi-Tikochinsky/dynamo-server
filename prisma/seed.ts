@@ -8,21 +8,24 @@ import { MEMBER_COLORS } from '../src/lib/constants';
 
 const prisma = new PrismaClient();
 
-function demoPassword(): string {
+/** In production the demo accounts get a private password (SEED_PASSWORD); without it there is no demo data. */
+function demoPassword(): string | null {
   const fromEnv = process.env.SEED_PASSWORD?.trim();
   if (fromEnv) return fromEnv;
-  if (process.env.NODE_ENV === 'production') {
-    throw new Error('In production set SEED_PASSWORD (a private password for the demo accounts) before seeding.');
-  }
-  return 'Demo1234';
+  return process.env.NODE_ENV === 'production' ? null : 'Demo1234';
 }
 
 async function main() {
+  const password = demoPassword();
+  if (!password) {
+    console.log('SEED_PASSWORD is not set – skipping demo data.');
+    return;
+  }
   if (await prisma.user.findUnique({ where: { email: 'rachely@example.com' } })) {
     console.log('Demo data already exists – nothing to do.');
     return;
   }
-  const passwordHash = await bcrypt.hash(demoPassword(), 10);
+  const passwordHash = await bcrypt.hash(password, 10);
   const T = getToday();
 
   // ----- Demo group -----

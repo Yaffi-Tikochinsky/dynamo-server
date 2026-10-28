@@ -25,3 +25,5 @@ services:
         value: 24h
       - key: CORS_ORIGIN
         sync: false # the address of your React site, e.g. https://my-app.onrender.com
+      - key: SEED_PASSWORD
+        sync: false # password for the demo accounts; leave empty for no demo data
