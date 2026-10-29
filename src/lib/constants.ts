@@ -8,10 +8,14 @@ export const AVATAR_EMOJI: Record<Avatar, string> = {
   TREE: '🌳', CACTUS: '🌵', MOUNTAIN: '⛰️', BOOK: '📚', GUITAR: '🎸', SOCCER: '⚽',
 };
 
-/** Member colors: warm tones that match the site's design, still easy to tell apart in charts. */
+/**
+ * Member colors: smoky tones that sit well on the site's paper background (copper, slate, sage...).
+ * Each has at least 3:1 contrast on the paper and they stay easy to tell apart in charts.
+ * Changing this list needs a migration that maps the old colors stored on users (see 20261029120000_smoky_member_colors).
+ */
 export const MEMBER_COLORS = [
-  '#FFB020', '#FF6B5A', '#FFE27A', '#FF8FB8', '#F27A3A',
-  '#C7E36B', '#FFC9A0', '#E8A0FF', '#7FE0C8', '#D9A066',
+  '#B5653A', '#4E6A82', '#7A8B5A', '#B0707A', '#A87A2E',
+  '#4F8A86', '#7E5A7E', '#9C4A3C', '#3F5A48', '#8C7462',
 ] as const;
 
 /** Highest value of one daily report, per scale. */
