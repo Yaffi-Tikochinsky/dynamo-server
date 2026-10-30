@@ -312,8 +312,8 @@ export const openApiDocument: Obj = {
         responses: { 200: { description: 'עודכן', content: json(ref('ChallengeDetails'), detailsExample) }, 400: E['400rule'], 401: E[401], 403: E[403], 404: E[404] },
       },
       delete: {
-        tags: ['Challenges'], summary: 'מחיקת אתגר', description: 'ציבורי – מנהל, רק לפני ההתחלה. פרטי – היוצר, תמיד.', security: secured,
-        responses: { 204: { description: 'נמחק' }, 400: E['400rule'], 401: E[401], 403: E[403], 404: E[404] },
+        tags: ['Challenges'], summary: 'מחיקת אתגר', description: 'ציבורי – מנהל. פרטי – היוצר. בכל שלב, כולל אחרי ההתחלה; הדיווחים נמחקים יחד עם האתגר.', security: secured,
+        responses: { 204: { description: 'נמחק' }, 401: E[401], 403: E[403], 404: E[404] },
       },
     },
     '/api/challenges/{id}/join': {

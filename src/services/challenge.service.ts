@@ -169,7 +169,7 @@ export async function getChallengeDetails(id: number, user: AuthUser) {
     })),
     permissions: {
       canEdit: owner && status !== 'ENDED',
-      canDelete: c.visibility === 'PRIVATE' ? owner : owner && status === 'UPCOMING',
+      canDelete: owner,
       canJoin: summary.canJoin,
       canLeave: c.visibility === 'PUBLIC' && summary.isJoined && status === 'UPCOMING',
       canRenew: owner && status === 'ENDED',
@@ -318,9 +318,7 @@ export async function updateChallenge(id: number, user: AuthUser, input: UpdateC
 export async function deleteChallenge(id: number, user: AuthUser): Promise<void> {
   const c = await getVisibleChallenge(id, user);
   if (!hasOwnerRights(c, user)) throw forbidden('רק מנהל הקבוצה יכול למחוק אתגר ציבורי');
-  if (c.visibility === 'PUBLIC' && statusOf(c, getToday()) !== 'UPCOMING') {
-    throw ruleViolation('אפשר למחוק אתגר ציבורי רק לפני שהתחיל');
-  }
+  // Reports and participants are removed with it (cascade); a renewal just loses its link.
   await prisma.challenge.delete({ where: { id } });
 }
 

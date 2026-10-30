@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { api, auth, createChallenge, DAY0, join, publicChallenge, registerManager, registerMember, setToday, useCleanDatabase } from './helpers';
+import { api, auth, createChallenge, DAY0, join, publicChallenge, registerManager, registerMember, report, setToday, useCleanDatabase } from './helpers';
 
 useCleanDatabase();
 
@@ -128,13 +128,19 @@ describe('editing and deleting', () => {
     expect((await api().patch(`/api/challenges/${c.id}`).set(auth(manager.token)).send({ title: 'מאוחר' })).status).toBe(400);
   });
 
-  it('a public challenge can be deleted only before it starts; a private one always', async () => {
+  it('the owner can delete a challenge at any stage, including after it started', async () => {
     const manager = await registerManager();
     const member = await registerMember(manager.joinCode);
     const active = await createChallenge(manager.token, publicChallenge());
     const upcoming = await createChallenge(manager.token, publicChallenge({ startDate: '2026-11-03' }));
     const priv = await createChallenge(member.token, { title: 'פרטי', scale: 'YES_NO', visibility: 'PRIVATE', startDate: DAY0, endDate: '2026-11-05' });
-    expect((await api().delete(`/api/challenges/${active.id}`).set(auth(manager.token))).status).toBe(400);
+    await join(member.token, active.id);
+    expect((await report(member.token, active.id, [{ date: DAY0, value: 1 }])).status).toBeLessThan(300);
+    expect((await api().delete(`/api/challenges/${active.id}`).set(auth(member.token))).status).toBe(403);
+    const details = await api().get(`/api/challenges/${active.id}`).set(auth(manager.token));
+    expect(details.body.permissions.canDelete).toBe(true);
+    expect((await api().delete(`/api/challenges/${active.id}`).set(auth(manager.token))).status).toBe(204);
+    expect((await api().get(`/api/challenges/${active.id}`).set(auth(manager.token))).status).toBe(404);
     expect((await api().delete(`/api/challenges/${upcoming.id}`).set(auth(member.token))).status).toBe(403);
     expect((await api().delete(`/api/challenges/${upcoming.id}`).set(auth(manager.token))).status).toBe(204);
     expect((await api().delete(`/api/challenges/${priv.id}`).set(auth(member.token))).status).toBe(204);
